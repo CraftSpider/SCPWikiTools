@@ -24,38 +24,42 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 
 //Every time a page loads that we are allowed to access, check whether it is one we want to put scripts on.
 chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
+	for (key in details) {
+		//console.log(key + ": " + details[key]);
+	}
+	var tab = details.tabId;
 	var href = details.url;
 	// console.log(href);
 	if ((href.match("http://www.scp-wiki.net*") || href.match("http://scp-wiki.wikidot.com*")) && !href.match("iframe")) {
 		if (getValue("jumpbox")) {
-			chrome.tabs.executeScript(null, {file: "scpwiki-jumpbox.js"});
+			chrome.tabs.executeScript(tab, {file: "scpwiki-jumpbox.js"});
 		}
 		if (getValue("pmShortcut")) {
-			chrome.tabs.executeScript(null, {file: "scpwiki-pm-shortcut.js"});
+			chrome.tabs.executeScript(tab, {file: "scpwiki-pm-shortcut.js"});
 		}
 		if (getValue("ratingGone")) {
-			chrome.tabs.executeScript(null, {file: "scpwiki-rating-b-gone.js"});
+			chrome.tabs.executeScript(tab, {file: "scpwiki-rating-b-gone.js"});
 		}
 		if (getValue("realVotes") && !href.match("forum")) {
-			chrome.tabs.executeScript(null, {file: "scpwiki-real-votes.js"});
+			chrome.tabs.executeScript(tab, {file: "scpwiki-real-votes.js"});
 		}
 		if (href.match("scp-series*") && getValue("deadlinks")) {
-			chrome.tabs.executeScript(null, {file: "scpwiki-deadlinks-in-series.js"});
+			chrome.tabs.executeScript(tab, {file: "scpwiki-deadlinks-in-series.js"});
 		}
 		if (href.match("/scp-*")) {
 			if (getValue("pageRead")) {
-				chrome.tabs.executeScript(null, {file: "scpwiki-page-read.js"});
+				chrome.tabs.executeScript(tab, {file: "scpwiki-page-read.js"});
 			}
 			if (getValue("prevNext")) {
-				chrome.tabs.executeScript(null, {file: "scpwiki-prev-next.js"});
+				chrome.tabs.executeScript(tab, {file: "scpwiki-prev-next.js"});
 			}
 		}
 		if (href.match("forum*")) {
 			if (getValue("staffIDs")) {
-				chrome.tabs.executeScript(null, {file: "scpwiki-staff-ids.js"});
+				chrome.tabs.executeScript(tab, {file: "scpwiki-staff-ids.js"});
 			}
 			if (getValue("authorKarma")) {
-				chrome.tabs.executeScript(null, {file: "scpwiki-author-karma.js"});
+				chrome.tabs.executeScript(tab, {file: "scpwiki-author-karma.js"});
 			}
 		}
 	}
