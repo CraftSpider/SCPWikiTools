@@ -21,61 +21,7 @@ select "SCP Wiki Tools", and click Uninstall.
 // @include       http://www.scp-wiki.net/*
 // @include       http://scp-wiki.wikidot.com/*
 // ==/UserScript==
-
-/*
- * Removes all whitespace from the beginning and the end of a string
- *
- * Usage: myString.trim()
- * Returns: string, the string the function is applied to, stripped of all whitespace at the beginning and end.
- */
-String.prototype.trim = function () {
-	return this.replace(/^\s+|\s+$/g, "");
-}
-
-String.prototype.lpad = function(padding, length) {
-	str = this;
-	while (str.length < length) {
-		str = padding + str;
-	}
-	return str;
-}
-
-/*
- * Merges multiple items into one item in an array. If values are numeric, adds them. If values are  strings, concatenates them. If values are mixed, will add concurrent numeric values and concatenate when encountering a string.
- *
- * Usage: Array.mergeItems(start, stop)
- * Returns: array, the array the function has been applied to, with all items between and including start 
- *          and stop merged into one new item
- */
-Array.prototype.mergeItems = function (start, stop)
-{
-	var newItem;
-	if (!isNaN(parseFloat(this[start])) && isFinite(this[start])) {
-		newItem = 0;
-	} else {
-		newItem = "";
-	}	
-	for (x = start; x <= stop; x++) {
-		//console.log('Item #' + x + ' = ' + this[x]);
-		newItem = newItem + this[x];
-		//console.log('newItem = ' + newItem);
-	}
-	
-	this.splice(start, ((stop - start) + 1));
-	//console.log('[' + this.join(', ') + ']');
-	this.splice(start, 0, newItem);
-	return this;
-}
-
-/*
- * Checks to see if a value is numeric without the pitfalls of isNumeric
- *
- * Usage: isNumber(value)
- * Returns: boolean true if numeric, boolean false if not numeric
- */
-function isNumber(n) {
-	return !isNaN(parseFloat(n)) && isFinite(n);
-}
+"use strict";
 
 /*
  * Changes the current location to the desired article
@@ -84,21 +30,21 @@ function isNumber(n) {
  * Returns: -
  */
 function jump() {
-	var input = document.getElementById('jumpBox').value.trim();
-	var reqPageArr = input.split("|");
+	let input = document.getElementById('jumpBox').value.trim();
+	let reqPageArr = input.split("|");
 //	console.log('Array: ' + reqPageArr);
 	if (reqPageArr.length > 2) {
 //		console.log('ReqPageArr > 2');
 		reqPageArr.mergeItems(1, reqPageArr.length - 1);
 	}
-	if (reqPageArr.length == 1) {
-//		console.log('ReqPageArr.length = 1 and we\'re looking for a scip');	
+	if (reqPageArr.length === 1) {
+//		console.log('ReqPageArr.length = 1 and we\'re looking for a scip');
 		page = reqPageArr[0].toLowerCase();
 		if (isNumber(page)) {
 			page = "scp-" + page.toString().lpad('0',3);
 		}
 	} else {
-		var scip = false;
+		let scip = false;
 		switch (reqPageArr[0].toLowerCase()) {
 			case "j":
 //				console.log('ReqPageArr.length > 1 and -J specifically requested');
@@ -135,9 +81,9 @@ function jump() {
 				page = reqPageArr[1];
 				scip = false;
 		}
-		if (scip && reqPageArr[1].toLowerCase().indexOf('scp-') == -1) {
+		if (scip && reqPageArr[1].toLowerCase().indexOf('scp-') === -1) {
 			page = "scp-" + page;
-			if (page.indexOf('--') != -1) {
+			if (page.indexOf('--') !== -1) {
 				page = page.replace('--', '-');
 			}
 		}
@@ -146,23 +92,13 @@ function jump() {
 	window.location = "http://www.scp-wiki.net/" + page;
 }
 
-/*
- * Checks to see if a value is numeric without the pitfalls of isNumeric
- *
- * Usage: isNumber(value)
- * Returns: boolean true if numeric, boolean false if not numeric
- */
-function isNumber(n) {
-	return !isNaN(parseFloat(n)) && isFinite(n);
-}
-
 function checkEnterPress(e) {
 	// look for window.event in case event isn't passed in
 	if (typeof e == 'undefined' && window.event) { e = window.event; }
-	if (e.keyCode == 13) { document.getElementById('jumpButton').click(); }
+	if (e.keyCode === 13) { document.getElementById('jumpButton').click(); }
 }
 
-var jumpBox = document.createElement('input');
+let jumpBox = document.createElement('input');
 jumpBox.setAttribute('type', 'text');
 jumpBox.setAttribute('size', '10');
 jumpBox.setAttribute('id', 'jumpBox');
@@ -175,7 +111,7 @@ jumpBox.style.borderRadius = "5px";
 jumpBox.style.boxShadow = "1px 1px 3px rgba(0, 0, 0, 0.5) inset";
 jumpBox.style.color = "#CCCCCC";
 
-var jumpButton = document.createElement('input');
+let jumpButton = document.createElement('input');
 jumpButton.setAttribute('id', 'jumpButton');
 jumpButton.setAttribute('type', 'button');
 jumpButton.setAttribute('value', 'Jump!');
@@ -190,7 +126,11 @@ jumpButton.style.cursor = "pointer";
 jumpButton.style.fontSize = "90%";
 jumpButton.style.fontWeight = "bold";
 
-var loginStatus = document.getElementById('login-status');
+let loginStatus = document.getElementById('login-status');
 
-loginStatus.appendChild(jumpBox);
-loginStatus.appendChild(jumpButton);
+if (!loginStatus.children["jumpBox"]) {
+	loginStatus.appendChild(jumpBox);
+}
+if (!loginStatus.children["jumpButton"]) {
+	loginStatus.appendChild(jumpButton);
+}

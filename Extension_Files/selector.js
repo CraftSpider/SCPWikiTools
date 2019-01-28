@@ -1,5 +1,6 @@
+"use strict";
 
-var userData;
+let userData;
 chrome.storage.local.get(null, function(items) {
 	userData = items;
 	elementByID('deadlinks').setAttribute('class', (userData.deadlinks ? "active" : ""));
@@ -13,7 +14,7 @@ chrome.storage.local.get(null, function(items) {
 	elementByID('realVotes').setAttribute('class', (userData.realVotes ? "active" : ""));
 });
 chrome.storage.onChanged.addListener(function(changes, namespace) {
-	for (key in changes) {
+	for (const key in changes) {
 		userData[key] = changes[key].newValue;
 	}
 });
@@ -22,14 +23,14 @@ function elementByID(id) {
 	return document.getElementById(id);
 }
 
-/* 
+/*
  * Sets a value in the chrome extension storage.
- * 
+ *
  * Usage: setValue(key, val)
  * Returns: nothing
  */
 function setValue(key, val) {
-	var obj = {};
+	let obj = {};
 	obj[key] = val;
 	console.log("set: {" + key + ": " + val + "}");
 	chrome.storage.local.set(obj);
@@ -37,7 +38,7 @@ function setValue(key, val) {
 
 /*
  * Gets a value from the chrome extension storage synchronously.
- * 
+ *
  * Usage: getValue(key, def)
  * Returns: value at key if extant, def if not.
  */
@@ -51,7 +52,7 @@ function getValue(key, def) {
 }
 
 function toggleValue(key) {
-	setValue(key, (getValue(key) ? false : true ));
+	setValue(key, !getValue(key));
 	elementByID(key).setAttribute('class', (!userData[key] ? "active" : ""))
 }
 

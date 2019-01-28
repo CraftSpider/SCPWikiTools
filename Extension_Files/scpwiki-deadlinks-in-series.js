@@ -22,53 +22,34 @@ select "SCP Wiki Tools", and click Uninstall.
 // @include       http://www.scp-wiki.net/scp-series*
 // @include       http://scp-wiki.wikidot.com/scp-series*
 // ==/UserScript==
+"use strict";
 
-/*
- * Removes all whitespace from the beginning and the end of a string
- *
- * Usage: myString.trim()
- * Returns: string, the string the function is applied to, stripped of all whitespace at the beginning and end.
- */
-String.prototype.trim = function ()
-{
-	
-	return this.replace(/^\s+|\s+$/g, "");
-	
-}
+let myAccount = document.getElementById('my-account');
 
-var myAccount = document.getElementById('my-account');
+if (myAccount) {
+	let links = document.getElementsByTagName('a');
+	let wrongTitles = [];
+	let noTitles = [];
+	let output;
 
-if (myAccount)
-{
-	var links = document.getElementsByTagName('a');
-	var wrongTitles = new Array();
-	var noTitles = new Array();
-	var output;
-	
-	for (var x = 0; x < links.length; x++)
-	{
-		if (links[x].className == "newpage")
-		{
-			if (links[x].parentNode.innerHTML.indexOf('[ACCESS DENIED]') == -1)
-			{
+	for (let x = 0; x < links.length; x++) {
+		if (links[x].className === "newpage") {
+			if (links[x].parentElement.innerHTML.indexOf('[ACCESS DENIED]') === -1) {
 				wrongTitles.push(links[x].innerHTML);
 			}
 		}
-	} 
-	
-	if (wrongTitles.length > 0)
-	{
+	}
+
+	if (wrongTitles.length > 0) {
 		output = "<h3>Titles not removed after deletion:</h3>";
 		output += "<p>" + wrongTitles.join('<br>');
 		output += "</p>"
-	}
-	else
-	{
+	} else {
 		output = "<h3>No dead links detected.</h3>";
 	}
 
-	var container = document.getElementById('main-content');
-	var checkDiv = document.createElement('div');
+	let container = document.getElementById('main-content');
+	let checkDiv = document.createElement('div');
 	checkDiv.setAttribute('class', 'content-panel standalone series');
 	checkDiv.innerHTML = output;
 	container.insertBefore(checkDiv, container.childNodes[0]);

@@ -21,16 +21,17 @@ select "SCP Wiki Tools", and click Uninstall.
 // @include       http://www.scp-wiki.net/*
 // @include       http://scp-wiki.wikidot.com/*
 // ==/UserScript==
+"use strict";
 
-var ratingModules = document.getElementsByClassName("page-rate-widget-box");
-var x;
+let ratingModules = document.getElementsByClassName("page-rate-widget-box");
+let x;
 
 //console.log("Number of rating modules: " + ratingModules.length);
 
 if (ratingModules.length > 0) {
 	for (x = 0; x < ratingModules.length; x++) {
-		//console.log("Module #: " + x);	
-		ratingModules[x].parentNode.style.display = "none";
+		//console.log("Module #: " + x);
+		ratingModules[x].parentElement.style.display = "none";
 	}
 }
 
