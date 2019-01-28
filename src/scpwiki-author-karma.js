@@ -89,7 +89,6 @@ function setAuthorKarma() {
 	}
 }
 
-let loginStatus = document.getElementById('login-status');
 let myAccount = document.getElementById('my-account');
 
 function reloadKarma() {

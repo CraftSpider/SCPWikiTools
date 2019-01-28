@@ -66,3 +66,58 @@ Array.prototype.mergeItems = function (start, stop) {
 function isNumber(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
+
+// Chrome storage related functions
+
+let userData;
+chrome.storage.local.get(null, function(items) {
+    userData = items;
+});
+chrome.storage.onChanged.addListener(function(changes) {
+    for (const key in changes) {
+        userData[key] = changes[key].newValue;
+    }
+});
+
+/*
+ * Sets a value in the chrome extension storage.
+ *
+ * Usage: setValue(key, val)
+ * Returns: nothing
+ */
+function setValue(key, val) {
+    let obj = {};
+    obj[key] = val;
+    //console.log("set: {" + key + ": " + val + "}");
+    chrome.storage.local.set(obj);
+}
+
+/*
+ * Gets a value from the chrome extension storage synchronously.
+ *
+ * Usage: getValue(key, def)
+ * Returns: value at key if extant, def if not.
+ */
+function getValue(key, def) {
+    if (userData[key] === undefined) {
+        //console.log("get: {" + key + ": " + def + "}");
+        return def;
+    }
+    //console.log("get: {" + key + ": " + userData[key] + "}");
+    return userData[key];
+}
+
+/*
+ * Removes a value from the chrome extension storage synchronously
+ *
+ * Usage: removeValue(key)
+ * Returns: Whether the key was in the storage
+ */
+function removeValue(key) {
+    if (userData[key] === undefined) {
+        return false;
+    }
+    delete userData[key];
+    chrome.storage.local.remove(key);
+    return true;
+}
