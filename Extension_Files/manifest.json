@@ -6,9 +6,9 @@
 
 	"description": "Links together various userscripts for the SCP Foundation website",
 	"icons": {
-		"16": "SmallLogo.gif",
-		"100": "LargeLogo.png",
-		"128": "128Logo.png"
+		"16": "16Logo.png",
+		"128": "128Logo.png",
+		"1024": "1024Logo.png"
 	},
 
 	"background": {
