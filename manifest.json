@@ -6,17 +6,17 @@
 
 	"description": "Links together various userscripts for the SCP Foundation website",
 	"icons": {
-		"16": "16Logo.png",
-		"128": "128Logo.png",
-		"1024": "1024Logo.png"
+		"16": "media/16Logo.png",
+		"128": "media/128Logo.png",
+		"1024": "media/1024Logo.png"
 	},
 
 	"background": {
 		"persistent": false,
-		"scripts": ["background.js"]
+		"scripts": ["src/background.js"]
 	},
 	"browser_action": {
-		"default_popup": "selector.html"
+		"default_popup": "pages/selector.html"
 	},
 	"permissions": [
 		"tabs",
