@@ -30,59 +30,64 @@ select "SCP Wiki Tools", and click Uninstall.
  * Returns: The staff list, in HTML form.
  */
 function GetStaffList() {
-	let request = new XMLHttpRequest();
-	request.open("GET", "http://05command.wikidot.com/senior-staff-list-teams", false);
-	request.onload = function(response) {
-			return response.responseText;
-		};
-	request.send();
-	return request;
+	chrome.runtime.sendMessage("http://05command.wikidot.com/senior-staff-list-teams", populateVars)
 }
 
-let staffText = GetStaffList();
-let parser = new DOMParser();
-let staff = [];
-let staffHTML = parser.parseFromString(staffText.responseText, "application/xml");
-let staffList = staffHTML.getElementById('page-content');
-let currNode;
-let position = "";
-let stop = false;
+let staff, staffHTML, staffList, position, stop;
 
-for (let x = 0; x < staffList.childNodes.length; x++) {
-	currNode = staffList.childNodes[x];
-	// console.log("Current nodename = '" + currNode.nodeName +"'");
-	// console.log("Current node innerHTML = '" + currNode.innerHTML + "'");
+function populateVars(staffText) {
+	let parser = new DOMParser();
+	staff = [];
+	staffHTML = parser.parseFromString(staffText, "application/xml");
+	staffList = staffHTML.getElementById('page-content');
+	position = "";
+	stop = false;
 
-	if (currNode.nodeName.toLowerCase() === "p") {
-		if (currNode.getElementsByTagName('strong')[0]) {
-			let positionText = currNode.getElementsByTagName('strong')[0].innerHTML;
-			// console.log('raw position text:  \'' + positionText + '\'');
+	main()
+}
 
-			if (positionText.toLowerCase().indexOf('inactive') === -1 && positionText.toLowerCase().indexOf('chat') === -1 && positionText.toLowerCase().indexOf('owner') === -1) {
-				stop = false;
+function main() {
+	let curNode;
+	for (let x = 0; x < staffList.childNodes.length; x++) {
+		curNode = staffList.childNodes[x];
+		// console.log("Current nodename = '" + currNode.nodeName +"'");
+		// console.log("Current node innerHTML = '" + currNode.innerHTML + "'");
 
-				position = positionText.replace('Current ','');
-				position = position.replace('Active','');
-				position = position.replace('s:', '');
-				position = position.replace(':', '');
-				position = position.trim();
-				// console.log('Found position: ' + position);
-			} else {
-				stop = true;
+		if (curNode.nodeName.toLowerCase() === "p") {
+			if (curNode.getElementsByTagName('strong')[0]) {
+				let positionText = curNode.getElementsByTagName('strong')[0].innerHTML;
+				// console.log('raw position text:  \'' + positionText + '\'');
+
+				if (positionText.toLowerCase().indexOf('inactive') === -1 && positionText.toLowerCase().indexOf('chat') === -1 && positionText.toLowerCase().indexOf('owner') === -1) {
+					stop = false;
+
+					position = positionText.replace('Current ', '');
+					position = position.replace('Active', '');
+					position = position.replace('s:', '');
+					position = position.replace(':', '');
+					position = position.trim();
+					// console.log('Found position: ' + position);
+				} else {
+					stop = true;
+				}
+			}
+		} else if (curNode.nodeName.toLowerCase() === "ul" && position !== "" && !stop) {
+			let lis = curNode.getElementsByTagName('li');
+
+			for (let y = 0; y < lis.length; y++) {
+				let userName = lis[y].getElementsByTagName('a')[1].innerHTML;
+				staff.push(userName + "|" + position);
+				// console.log('New element added: \'' + staff[staff.length - 1] + '\'');
 			}
 		}
-	} else if (currNode.nodeName.toLowerCase() === "ul" && position !== "" && !stop) {
-		let lis = currNode.getElementsByTagName('li');
-
-		for (let y = 0; y < lis.length; y++) {
-			let userName = lis[y].getElementsByTagName('a')[1].innerHTML;
-			staff.push(userName + "|" + position);
-			// console.log('New element added: \'' + staff[staff.length - 1] + '\'');
-		}
+		// console.log('Length of array: ' + staff.length);
 	}
-	// console.log('Length of array: ' + staff.length);
+
+	SetStaffIds();
+	setInterval(SetStaffIds, 500);
 }
 
+// TODO: Fix this to not run again on pages alread done more efficiently
 function SetStaffIds() {
 	let container;
 
@@ -100,6 +105,10 @@ function SetStaffIds() {
 	let staffName, staffId;
 
 	for (let x = 0; x < infoSpans.length; x++) {
+		if (infoSpans[x].firstElementChild.classList.contains("deleted")) {
+			console.log("Deleted user");
+			continue;
+		}
 		userName = infoSpans[x].getElementsByTagName('span')[0].getElementsByTagName('a')[1].innerHTML;
 		// console.log(userName);
 
@@ -134,5 +143,4 @@ function SetStaffIds() {
 	}
 }
 
-SetStaffIds();
-setInterval(SetStaffIds, 500);
+GetStaffList();

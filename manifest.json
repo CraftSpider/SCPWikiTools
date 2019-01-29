@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "SCP Wiki Tools",
 	"short_name": "SCP Tools",
-	"version": "1.0.6",
+	"version": "1.0.8",
 
 	"description": "Links together various userscripts for the SCP Foundation website",
 	"icons": {

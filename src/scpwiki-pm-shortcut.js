@@ -23,13 +23,16 @@ select "SCP Wiki Tools", and click Uninstall.
 // ==/UserScript==
 "use strict";
 
-let myAccount = document.getElementById('my-account');
-
 function addCheckSpan() {
 	let span = document.createElement('span');
 	span.id = "checkEnvelope";
 	span.style.display = "none";
-	document.getElementById('recent-posts-container').appendChild(span);
+
+	let element = document.getElementById("thread-container-posts");
+	if (element === undefined) {
+		element = document.getElementById("page-content");
+	}
+	element.appendChild(span);
 }
 
 function addEnvelopes() {
@@ -40,21 +43,24 @@ function addEnvelopes() {
 		let spans = container.getElementsByTagName('span');
 		let userNumber;
 
-		for (x in spans) {
+		for (const x in spans) {
 			if (spans[x].innerHTML && spans[x].innerHTML.indexOf("user:info") !== -1 && spans[x].innerHTML.indexOf("messages#/new/") === -1) {
 				// console.log("Found a user");
 				userNumber = spans[x].innerHTML.substring(spans[x].innerHTML.indexOf('userInfo(') + 9, spans[x].innerHTML.indexOf(');'));
 				spans[x].innerHTML += "<a href=\"http://www.wikidot.com/account/messages#/new/" + userNumber + "\" target=\"_blank\"><img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAICAIAAABChommAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEVSURBVHjaVJDNSsNAFIVnkslkTH8oUjSk0GQRYuLKQKXPoD6BG0HBJ3PlqroQulLjRrtRuxJ8AqEGIvlrMpMZJyKIl7O697v3HC6c7gfnp0eqhgRlAIK/EkDB2jpfX1zO0dnJwa5vh6FHCBaMgV9QQE3L83K5fD9mh0qv37EdazaL4lWSpmWSpFJZVq4+4uurB9cdGx1VoVVtjYbhnnt7/yyEMAzd2CCMNnfRy3Tib20PaM2QvM6r2hmbvOE380WvS6RZmpeTcGdkDXlFIQRItqAQRVE5tokQ+oy/ZKrAdyxzsyhrHbcAwroO+91BywIvsD1VaXMzziklRI4MTDCKHl+TjDVVJv49APxsAZXgp8XbtwADAHq0bNwCmPgUAAAAAElFTkSuQmCC\" style=\"margin-left: 5px; margin-right: 5px;\" alt='PM shortcut envelope'></a>";
-
-				if (!document.getElementById('checkEnvelope')) {
-					// console.log('Adding checkspan at ' + x);
-					addCheckSpan();
-				}
 			}
 		}
+
+        addCheckSpan();
 	}
 }
 
-if (myAccount) {
-	let timer = setInterval(addEnvelopes, 250);
+function main() {
+	let myAccount = document.getElementById('my-account');
+
+	if (myAccount) {
+		let timer = setInterval(addEnvelopes, 500);
+	}
 }
+
+main();

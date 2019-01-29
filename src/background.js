@@ -64,3 +64,16 @@ chrome.webNavigation.onDOMContentLoaded.addListener(function(details) {
 		}
 	}
 });
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+	let req = new XMLHttpRequest();
+	req.open("GET", request, false);
+	req.onload = function () {
+		if (req.readyState === 4 && req.status === 200) {
+			sendResponse(req.responseText);
+		}
+	};
+	req.send();
+
+	return true;
+});

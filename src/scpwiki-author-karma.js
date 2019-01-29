@@ -23,22 +23,26 @@ select "SCP Wiki Tools", and click Uninstall.
 // ==/UserScript==
 "use strict";
 
+let rankingHTML;
+
 function getAuthorStats() {
-	let request = new XMLHttpRequest();
-	request.open("GET", "http://sandboxcrayne.wikidot.com/author-stats", false);
-	request.onload = function(response) {
-			return response;
-		};
-	request.send();
-	return request;
+	chrome.runtime.sendMessage("http://sandboxcrayne.wikidot.com/author-stats", populateVars);
 }
 
-let rankingText = getAuthorStats();
-let parser = new DOMParser();
-let rankingHTML = parser.parseFromString(rankingText.responseText, "text/html");
+function populateVars(rankingText) {
+    let parser = new DOMParser();
+    rankingHTML = parser.parseFromString(rankingText, "application/xml");
+
+    let myAccount = document.getElementById('my-account');
+
+    if (myAccount && rankingHTML) {
+        setAuthorKarma();
+        document.getElementsByClassName("pager")[0].onclick = reloadKarma;
+    }
+}
 
 function setAuthorKarma() {
-	let infoSpans = document.getElementsByClassName('info');
+	let infoSpans = document.getElementsByClassName('avatarhover');
 	// console.log('Number of infoSpans: ' + infoSpans.length);
 	let lastRun = rankingHTML.getElementById("u-lastRun").innerHTML;
 
@@ -89,19 +93,14 @@ function setAuthorKarma() {
 	}
 }
 
-let myAccount = document.getElementById('my-account');
-
 function reloadKarma() {
 	let timer = setInterval(function() {
 		setAuthorKarma();
-		if (document.getElementsByClassName("info")[0].children[0].children[1].children.length > 0) {
+		if (document.getElementsByClassName("avatarhover")[0].children[0].children.length > 0) {
 			clearInterval(timer);
 			document.getElementsByClassName("pager")[0].onclick = reloadKarma();
 		}
 	}, 500);
 }
 
-if (myAccount && rankingHTML) {
-	setAuthorKarma();
-	document.getElementsByClassName("pager")[0].onclick = reloadKarma();
-}
+getAuthorStats();
